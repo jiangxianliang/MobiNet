@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:padding="16dip" >
+
+    <RelativeLayout
+        android:layout_width="70dip"
+        android:layout_height="400dip" >
+
+        <TextView
+            android:id="@+id/gpsStateString"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="right"
+            android:text="GPS状态:"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/satelliteAvailableString"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/gpsStateString"
+            android:layout_marginTop="8dp"
+            android:gravity="right"
+            android:text="可用卫星:"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/satelliteFixString"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/satelliteAvailableString"
+            android:layout_marginTop="8dp"
+            android:gravity="right"
+            android:text="使用卫星:"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/currentLocationString"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/satelliteFixString"
+            android:layout_marginTop="8dp"
+            android:gravity="right"
+            android:text="当前位置:"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/currentSpeedString"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/currentLocationString"
+            android:layout_marginTop="8dp"
+            android:gravity="right"
+            android:text="当前速度:"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/accuracyString"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/currentSpeedString"
+            android:layout_marginTop="8dp"
+            android:gravity="right"
+            android:text="精确度:"
+            android:textSize="15sp" />
+        
+        <TextView
+            android:id="@+id/systemTimeString"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/accuracyString"
+            android:layout_marginTop="8dp"
+            android:gravity="right"
+            android:text="系统时间:"
+            android:textSize="15sp" />
+        
+        <TextView
+            android:id="@+id/gpsTimeString"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/systemTimeString"
+            android:layout_marginTop="8dp"
+            android:gravity="right"
+            android:text="GPS时间:"
+            android:textSize="15sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="400dip"
+        android:layout_height="match_parent" >
+
+        <TextView
+            android:id="@+id/gpsState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="right"
+            android:text=""
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/satelliteAvailable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/gpsState"
+            android:layout_marginTop="8dp"
+            android:gravity="right"
+            android:text=""
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/satelliteFix"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/satelliteAvailable"
+            android:layout_marginTop="8dp"
+            android:gravity="right"
+            android:text=""
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/currentLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/satelliteFix"
+            android:layout_marginTop="8dp"
+            android:gravity="right"
+            android:text=""
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/currentSpeed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/currentLocation"
+            android:layout_marginTop="8dp"
+            android:gravity="right"
+            android:text=""
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/accuracy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/currentSpeed"
+            android:layout_marginTop="8dp"
+            android:gravity="right"
+            android:text=""
+            android:textSize="15sp" />
+        
+        <TextView
+            android:id="@+id/systemTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/accuracy"
+            android:layout_marginTop="8dp"
+            android:gravity="right"
+            android:text=""
+            android:textSize="15sp" />
+        
+        <TextView
+            android:id="@+id/gpsTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/systemTime"
+            android:layout_marginTop="8dp"
+            android:gravity="right"
+            android:text=""
+            android:textSize="15sp" />
+    </RelativeLayout>
+
+</LinearLayout>
