@@ -38,16 +38,18 @@ public class NetworkFragment extends Fragment {
 	
 	@Override
 	public void onPause() {
-		// TODO Auto-generated method stub
-		StatService.onPause(this);
+		// TODO Auto-generated method stub		
 		super.onPause();
+		
+		StatService.onPause(this);
 	}
 
 	@Override
 	public void onResume() {
-		// TODO Auto-generated method stub
-		StatService.onResume(this);
+		// TODO Auto-generated method stub		
 		super.onResume();
+		
+		StatService.onResume(this);
 	}
 	
 	private void initWidget(View view) {

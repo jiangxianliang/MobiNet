@@ -1,5 +1,6 @@
 package thu.kejiafan.mobinet;
 
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
@@ -33,6 +34,19 @@ public class Config {
     public static int position_two;
     public static int position_three;
     public static Resources resources;
+    
+    // file for log
+    static SimpleDateFormat dirDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+    static FileOutputStream fosMobile = null;
+	static FileOutputStream fosSignal = null;
+	static FileOutputStream fosSpeed = null;
+	static FileOutputStream fosCell = null;
+	static FileOutputStream fosUplink = null;
+	static FileOutputStream fosDownlink = null;
+	static FileOutputStream fosPing = null;
+	static FileOutputStream fosAddition = null;
+	static FileOutputStream fosDNS = null;
+	static FileOutputStream fosHTTP = null;
     
 	// variable for signalStrength
  	static int gsmSignalStrength = 99; // Valid values are (0-31, 99) as defined in TS 27.007 8.5
@@ -144,7 +158,14 @@ public class Config {
 	static Location loc;
 	static Criteria criteria;
 	static String bestProvider = null;
-	static int gpsAvailableNumber = 0;
-	static int gpsFixNumber = 0;
+	static String gpsAvailableNumber = "";
+	static String gpsFixNumber = "";
 	static String gpsTime = null;
+	static boolean isGPSPrepared = false;
+	
+	// write log content
+	static String lastSignalContent = "";
+	static String lastSpeedContent = "";
+	static String lastCellInfoContent = "";
+	static String lastDataContentString = "";
 }

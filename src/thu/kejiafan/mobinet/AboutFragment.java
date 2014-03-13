@@ -21,14 +21,16 @@ public class AboutFragment extends Fragment {
 	@Override
 	public void onPause() {
 		// TODO Auto-generated method stub
-		StatService.onPause(this);		
 		super.onPause();
+		
+		StatService.onPause(this);
 	}
 
 	@Override
 	public void onResume() {
 		// TODO Auto-generated method stub
-		StatService.onResume(this);
 		super.onResume();
+		
+		StatService.onResume(this);
 	}
 }

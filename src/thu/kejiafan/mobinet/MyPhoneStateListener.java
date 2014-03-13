@@ -1,5 +1,8 @@
 package thu.kejiafan.mobinet;
 
+import java.io.IOException;
+import java.util.Date;
+
 import android.telephony.CellLocation;
 import android.telephony.PhoneStateListener;
 import android.telephony.ServiceState;
@@ -13,6 +16,8 @@ public class MyPhoneStateListener extends PhoneStateListener {
 	@Override
 	public void onCellLocationChanged(CellLocation location) {
 		// TODO Auto-generated method stub
+		String date = Config.contentDateFormat.format(new Date(System.currentTimeMillis()));
+		
 		int cid = -1;
 		int lac = -1;
 		int psc = -1;
@@ -40,6 +45,27 @@ public class MyPhoneStateListener extends PhoneStateListener {
 					+ String.valueOf(Config.handoffNumber) + " 断网次数:"
 					+ String.valueOf(Config.disconnectNumber));
 		}
+		
+		String cellInfoContent = Config.networkTypeString + " "
+				+ cid + " " + lac + " " + psc + " " + cellLatitude + " "
+				+ cellLongitude;
+		try {
+			if (cellInfoContent.equals(Config.lastCellInfoContent)
+					|| Config.networkTypeString.equals("")) {
+				
+			} else {
+				Config.lastCellInfoContent = cellInfoContent;
+				cellInfoContent = date + " " + cellInfoContent;
+				if (Config.fosCell != null) {
+					Config.fosCell.write(cellInfoContent.getBytes());
+					Config.fosCell.write(System.getProperty("line.separator").getBytes());
+				}
+			}		
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		super.onCellLocationChanged(location);
 	}
 
@@ -52,6 +78,8 @@ public class MyPhoneStateListener extends PhoneStateListener {
 	@Override
 	public void onDataConnectionStateChanged(int state, int networkType) {
 		// TODO Auto-generated method stub
+		String date = Config.contentDateFormat.format(new Date(System.currentTimeMillis()));
+		
 		switch (state) {
 		case TelephonyManager.DATA_DISCONNECTED:		
 			Config.dataConnectionState = "Disconnected";
@@ -79,6 +107,24 @@ public class MyPhoneStateListener extends PhoneStateListener {
 		SignalUtil.getCurrentnetworkTypeString(networkType);
 		Config.tvNetworkType.setText(Config.networkTypeString);
 		
+		
+		String dataContentString = Config.dataConnectionState + " " + Config.networkTypeString;
+		try {
+			if (dataContentString.equals(Config.lastDataContentString)) {
+				
+			} else {
+				Config.lastDataContentString = dataContentString;
+				dataContentString = date + " " + dataContentString;
+				if (Config.fosMobile != null) {
+					Config.fosMobile.write(dataContentString.getBytes());
+					Config.fosMobile.write(System.getProperty("line.separator").getBytes());
+				}			
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		super.onDataConnectionStateChanged(state, networkType);
 	}
 
@@ -92,6 +138,8 @@ public class MyPhoneStateListener extends PhoneStateListener {
 	public void onSignalStrengthsChanged(SignalStrength signalStrength) {
 		// TODO Auto-generated method stub
 		super.onSignalStrengthsChanged(signalStrength);
+		
+		String date = Config.contentDateFormat.format(new Date(System.currentTimeMillis()));
 		/**
 		 * 获取信号强度参数
 		 */
@@ -126,7 +174,7 @@ public class MyPhoneStateListener extends PhoneStateListener {
 		case 4:
 			Config.signalStrengthString = "1x:" + Config.cdmaDbm + "  3G:"
 					+ Config.evdoDbm + "  Level:" + level;
-			Config.SignalParameterString = "CDMA:" + Config.cdmaEcio + " EVDO:"
+			Config.SignalParameterString = "Ecio:" + Config.cdmaEcio + "/"
 					+ Config.evdoEcio + " SNR:" + Config.evdoSnr;
 			break;
 		case 5:
@@ -137,11 +185,29 @@ public class MyPhoneStateListener extends PhoneStateListener {
 			break;
 		default:
 			Config.signalStrengthString = Config.gsmSignalStrength + "  Level:" + level;
-			Config.SignalParameterString = "误码率:" + Config.gsmBitErrorRate;			
+			Config.SignalParameterString = "BER:" + Config.gsmBitErrorRate;			
 			break;
 		}
 		Config.tvSignalStrength.setText(Config.signalStrengthString);
 		Config.tvSignalParameter.setText(Config.SignalParameterString);
+
+		String signalContent = Config.networkTypeString + " "
+				+ Config.signalStrengthString + " "+ Config.SignalParameterString;
+		try {
+			if (signalContent.equals(Config.lastSignalContent)) {
+				
+			} else {
+				Config.lastSignalContent = signalContent;
+				signalContent = date + " " + signalContent;
+				if (Config.fosSignal != null) {
+					Config.fosSignal.write(signalContent.getBytes());
+					Config.fosSignal.write(System.getProperty("line.separator").getBytes());
+				}
+			}			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

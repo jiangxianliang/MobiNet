@@ -17,11 +17,14 @@ import android.support.v4.view.ViewPager;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.ImageView;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity {	
@@ -34,13 +37,50 @@ public class MainActivity extends FragmentActivity {
 		initAll();
 	}
 	
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		
+		StatService.onPause(this);
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		
+		StatService.onResume(this);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// TODO Auto-generated method stub
+		menu.add(1, 1, 0, "专业模式");
+		menu.add(1, 2, 0, "版本更新");
+		menu.add(1, 3, 0, "完全退出");
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// TODO Auto-generated method stub
+		switch (item.getItemId()) {
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+		default:
+			break;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
 	private void initAll() {
 		// 设置屏幕常亮
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-		
-		// 调用百度统计
-		StatService.setAppChannel(this, "Baidu Market", true);
-		StatService.setSendLogStrategy(this, SendStrategyEnum.APP_START, 1, false);
 		
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_main);		
@@ -49,7 +89,12 @@ public class MainActivity extends FragmentActivity {
         initTextView();
         initViewPager();
         
-        getTelephoneInfo();
+        // 调用百度统计
+     	StatService.setAppChannel(this, "Baidu Market", true);
+     	StatService.setAppChannel(this, "Wandoujia", true);
+     	StatService.setAppChannel(this, "Weebly", true);
+     	StatService.setAppChannel(this, "Baidu0220", true);		
+     	StatService.setSendLogStrategy(this, SendStrategyEnum.APP_START, 1, false);
 	}
 	
 	private void initTextView() {
@@ -117,34 +162,19 @@ public class MainActivity extends FragmentActivity {
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         int screenW = dm.widthPixels;
-        Config.offset = (int) ((screenW / 4.0 - Config.bottomLineWidth) / 2);
 
+        LayoutParams params = (LayoutParams) Config.ivBottomLine.getLayoutParams();  
+        params.height = 2;  
+		params.width = (int) (screenW/ 4.0);
+        Config.ivBottomLine.setLayoutParams(params);
+        
+//        Config.offset = (int) ((screenW / 4.0 - Config.bottomLineWidth) / 2);
         Config.position_one = (int) (screenW / 4.0);
         Config.position_two = Config.position_one * 2;
         Config.position_three = Config.position_one * 3;
     }
     
-    private void getTelephoneInfo() {
-        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        Config.providerName = telephonyManager.getNetworkOperatorName();
-		Config.IMSI = telephonyManager.getSubscriberId();
-		if (Config.providerName == null) {
-			if (Config.IMSI.startsWith("46000")
-					|| Config.IMSI.startsWith("46002")
-					|| Config.IMSI.startsWith("46007")) {
-				Config.providerName = "中国移动";
-			} else if (Config.IMSI.startsWith("46001")) {
-				Config.providerName = "中国联通";
-			} else if (Config.IMSI.startsWith("46003")) {
-				Config.providerName = "中国电信";
-			} else {
-				Config.providerName = "非大陆用户";
-			}
-		}
-		ConnectivityManager connect = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo networkInfo = connect.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-		Config.subtypeName = networkInfo.getSubtypeName();
-  	}
+    
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {

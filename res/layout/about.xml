@@ -40,4 +40,11 @@
         android:textColorLink="@color/cyan"
         android:textSize="17sp" />
 
+    <Button
+        android:id="@+id/btnCheck"
+        android:layout_gravity="right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="检查更新" />
+
 </LinearLayout>

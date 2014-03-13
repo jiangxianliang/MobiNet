@@ -27,15 +27,28 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:persistent="true"
+        android:screenOrientation="portrait"
         android:theme="@style/AppTheme" >
         
-        <meta-data android:name="BaiduMobAd_CHANNEL" android:value="Baidu Market" />
-		<meta-data android:name="BaiduMobAd_STAT_ID" android:value="3b70a11423" />
-		<meta-data android:name="BaiduMobAd_SEND_STRATEGY" android:value="APP_START" />
-		<meta-data android:name="BaiduMobAd_CELL_LOCATION" android:value="true" />
-		<meta-data android:name="BaiduMobAd_GPS_LOCATION" android:value="true" />
-		<meta-data android:name="BaiduMobAd_WIFI_LOCATION" android:value="true" />
-        
+        <meta-data
+            android:name="BaiduMobAd_CHANNEL"
+            android:value="Weebly" />
+        <meta-data
+            android:name="BaiduMobAd_STAT_ID"
+            android:value="3b70a11423" />
+        <meta-data
+            android:name="BaiduMobAd_SEND_STRATEGY"
+            android:value="APP_START" />
+        <meta-data
+            android:name="BaiduMobAd_CELL_LOCATION"
+            android:value="true" />
+        <meta-data
+            android:name="BaiduMobAd_GPS_LOCATION"
+            android:value="true" />
+        <meta-data
+            android:name="BaiduMobAd_WIFI_LOCATION"
+            android:value="true" />
+
         <activity
             android:name="thu.kejiafan.mobinet.SplashActivity"
             android:label="@string/app_name" >
@@ -45,7 +58,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="thu.kejiafan.mobinet.MainActivity" />
+        
+        <activity
+            android:name="thu.kejiafan.mobinet.MainActivity"
+            android:screenOrientation="portrait" />
+
     </application>
 
 </manifest>

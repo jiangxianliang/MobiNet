@@ -1,5 +1,6 @@
 package thu.kejiafan.mobinet;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -40,16 +41,18 @@ public class GPSFragment extends Fragment {
 	
 	@Override
 	public void onPause() {
-		// TODO Auto-generated method stub
-		StatService.onPause(this);
+		// TODO Auto-generated method stub		
 		super.onPause();
+		
+		StatService.onPause(this);
 	}
 
 	@Override
 	public void onResume() {
 		// TODO Auto-generated method stub
-		StatService.onResume(this);
 		super.onResume();
+		
+		StatService.onResume(this);
 	}
 
 	private void initWidget(View view) {
@@ -73,15 +76,18 @@ public class GPSFragment extends Fragment {
 			// When GPS state change, can capture immediately
 			switch (status) {
 			case LocationProvider.AVAILABLE:
-				Config.gpsStateString = "Available";				
+				Config.gpsStateString = "Available";
+				Config.isGPSPrepared = true;
 				break;
 			case LocationProvider.OUT_OF_SERVICE:
 				Config.gpsStateString = "OutOfService";
 				Config.mobilitySpeed = "Unknown";
+				Config.isGPSPrepared = false;
 				break;
 			case LocationProvider.TEMPORARILY_UNAVAILABLE:
 				Config.gpsStateString = "Unavailable";
 				Config.mobilitySpeed = "Unknown";
+				Config.isGPSPrepared = false;
 				break;
 			}
 			Config.tvGpsState.setText(Config.gpsStateString);
@@ -100,13 +106,18 @@ public class GPSFragment extends Fragment {
 			// TODO Auto-generated method stub
 			Config.gpsStateString = "Disabled";
 			Config.tvGpsState.setText(Config.gpsStateString);
-			Config.mobilitySpeed = "Unknown";
+			Config.mobilitySpeed = "";
+			Config.gpsAvailableNumber = "";
+			Config.gpsFixNumber = "";
+			Config.isGPSPrepared = false;
 		}
 
 		@Override
 		public void onLocationChanged(Location location) {
 			// TODO Auto-generated method stub
 			Config.loc = Config.locationManager.getLastKnownLocation(Config.bestProvider);
+			String date = Config.contentDateFormat.format(new Date(System.currentTimeMillis()));
+			Config.isGPSPrepared = true;
 			Config.speed = Config.loc.getSpeed();
 			Config.mobilitySpeed = String.valueOf(Config.speed * 3.6) + " km/h";
 			Config.latitude = Config.loc.getLatitude();
@@ -118,6 +129,27 @@ public class GPSFragment extends Fragment {
 			Config.tvCurrentLocation.setText(Config.latitude + " " + Config.longitude);
 			Config.tvCurrentSpeed.setText(Config.mobilitySpeed);
 			Config.tvGpsTime.setText(Config.gpsTime);
+			
+			String speedContent = Config.gpsStateString + " " 
+					+ Config.mobilitySpeed + " "
+					+ String.valueOf(Config.latitude) + " "
+					+ String.valueOf(Config.longitude) + " "
+					+ String.valueOf(Config.accuracy);
+			try {
+				if (speedContent.equals(Config.lastSpeedContent)) {
+					
+				} else {
+					Config.lastSpeedContent = speedContent;
+					speedContent = date + " " + speedContent;
+					if (Config.fosSpeed != null) {
+						Config.fosSpeed.write(speedContent.getBytes());
+						Config.fosSpeed.write(System.getProperty("line.separator").getBytes());
+					}
+				}								
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	};
 
@@ -135,26 +167,30 @@ public class GPSFragment extends Fragment {
 				// 卫星状态改变
 				int maxSatellites = status.getMaxSatellites(); // 获取卫星颗数的默认最大值
 				Iterator<GpsSatellite> it = status.getSatellites().iterator();
-				Config.gpsAvailableNumber = 0;
-				Config.gpsFixNumber = 0;
-				while (it.hasNext() && Config.gpsAvailableNumber <= maxSatellites) {
+				int gpsAvailableNumber = 0;
+				int gpsFixNumber = 0;
+				while (it.hasNext() && gpsAvailableNumber <= maxSatellites) {
 					GpsSatellite s = it.next();
-					Config.gpsAvailableNumber++;
+					gpsAvailableNumber++;
 					if (s.usedInFix()) {
-						Config.gpsFixNumber++;
+						gpsFixNumber++;
 					}
 				}
-				Config.tvSatelliteAvailable.setText(String.valueOf(Config.gpsFixNumber));
-				Config.tvSatelliteFix.setText(String.valueOf(Config.gpsAvailableNumber));
+				Config.gpsAvailableNumber = String.valueOf(gpsAvailableNumber);
+				Config.gpsFixNumber = String.valueOf(gpsFixNumber);
+				Config.tvSatelliteAvailable.setText(Config.gpsFixNumber);
+				Config.tvSatelliteFix.setText(Config.gpsAvailableNumber);
 				break;
 			case GpsStatus.GPS_EVENT_STARTED:
 				Config.gpsStateString = "Start";
 				break;
 			case GpsStatus.GPS_EVENT_STOPPED:
 				Config.gpsStateString = "Stop";
+				Config.isGPSPrepared = false;
 				break;
 			case GpsStatus.GPS_EVENT_FIRST_FIX:
-				Config.gpsStateString = "FirstFix";				
+				Config.gpsStateString = "FirstFix";
+				Config.isGPSPrepared = true;
 			default:
 				break;
 			}
@@ -230,6 +266,10 @@ public class GPSFragment extends Fragment {
 			handler4Time.postDelayed(runnable4Time, 1000);
 			Config.tvSystemTime.setText(Config.contentDateFormat.format(
 					new Date(System.currentTimeMillis())));
+			if (Config.isGPSPrepared) {
+				Config.gpsTime = Config.contentDateFormat.format(Config.loc.getTime());	
+				Config.tvGpsTime.setText(Config.gpsTime);
+			}			
 		}
 	};
 }
