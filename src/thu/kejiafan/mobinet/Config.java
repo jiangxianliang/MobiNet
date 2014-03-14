@@ -148,6 +148,9 @@ public class Config {
 	
 	// gps content
 	static SimpleDateFormat contentDateFormat = new SimpleDateFormat("yyyyMMdd HH:mm:ss.SSS");
+	static SimpleDateFormat sysDateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
+	static long startTime = 0;
+	static String totalTime = "";
 	static String gpsStateString = "";
 	static String mobilitySpeed = "";
 	static float speed;

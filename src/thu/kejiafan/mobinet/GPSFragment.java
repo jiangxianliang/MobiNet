@@ -264,8 +264,11 @@ public class GPSFragment extends Fragment {
 		public void run() {			
 			// TODO Auto-generated method stub
 			handler4Time.postDelayed(runnable4Time, 1000);
-			Config.tvSystemTime.setText(Config.contentDateFormat.format(
-					new Date(System.currentTimeMillis())));
+			long time = System.currentTimeMillis();
+			long show = (time - Config.startTime) / 1000;
+			Config.totalTime = show / 60 + "'" + show % 60;
+			Config.tvSystemTime.setText(Config.sysDateFormat.format(new Date(
+					time)) + " ×ÜÊ±³¤:" + Config.totalTime);
 			if (Config.isGPSPrepared) {
 				Config.gpsTime = Config.contentDateFormat.format(Config.loc.getTime());	
 				Config.tvGpsTime.setText(Config.gpsTime);

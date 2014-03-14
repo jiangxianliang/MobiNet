@@ -6,15 +6,11 @@ import com.baidu.mobstat.SendStrategyEnum;
 import com.baidu.mobstat.StatService;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -35,6 +31,7 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		
 		initAll();
+		Config.startTime = System.currentTimeMillis();
 	}
 	
 	@Override
