@@ -68,6 +68,7 @@ public class MainActivity extends FragmentActivity {
 		case 2:
 			break;
 		case 3:
+			android.os.Process.killProcess(android.os.Process.myPid());
 			break;
 		default:
 			break;

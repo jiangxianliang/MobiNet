@@ -39,20 +39,10 @@
             android:textSize="15sp" />
 
         <TextView
-            android:id="@+id/phoneTypeString"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/operatorString"
-            android:layout_marginTop="8dp"
-            android:gravity="right"
-            android:text="手机类型:"
-            android:textSize="15sp" />
-
-        <TextView
             android:id="@+id/networkStateString"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/phoneTypeString"
+            android:layout_below="@+id/operatorString"
             android:layout_marginTop="8dp"
             android:gravity="right"
             android:text="连接状态:"
@@ -107,7 +97,7 @@
             android:gravity="right"
             android:text="基站位置:"
             android:textSize="15sp" />
-        
+
         <TextView
             android:id="@+id/handoffString"
             android:layout_width="wrap_content"
@@ -117,7 +107,7 @@
             android:gravity="right"
             android:text="网络选择:"
             android:textSize="15sp" />
-        
+
         <TextView
             android:id="@+id/neighbouringCellString"
             android:layout_width="wrap_content"
@@ -164,20 +154,10 @@
             android:textSize="15sp" />
 
         <TextView
-            android:id="@+id/phoneType"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/operator"
-            android:layout_marginTop="8dp"
-            android:gravity="right"
-            android:text=""
-            android:textSize="15sp" />
-
-        <TextView
             android:id="@+id/networkState"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/phoneType"
+            android:layout_below="@+id/operator"
             android:layout_marginTop="8dp"
             android:gravity="right"
             android:text=""
@@ -232,7 +212,7 @@
             android:gravity="right"
             android:text=""
             android:textSize="15sp" />
-        
+
         <TextView
             android:id="@+id/handoff"
             android:layout_width="wrap_content"
@@ -242,7 +222,7 @@
             android:gravity="right"
             android:text=""
             android:textSize="15sp" />
-        
+
         <TextView
             android:id="@+id/neighbouringCell"
             android:layout_width="wrap_content"

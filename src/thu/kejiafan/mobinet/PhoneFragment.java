@@ -25,24 +25,6 @@ public class PhoneFragment extends Fragment {
 		myPhoneListener = new MyPhoneStateListener();
 		Config.telManager = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
 		Config.telManager.listen(myPhoneListener, Config.phoneEvents);
-		
-		switch (Config.telManager.getNetworkType()) {
-		case TelephonyManager.PHONE_TYPE_NONE:
-			Config.tvPhoneType.setText("ÎÞÐÅºÅ");
-			break;
-		case TelephonyManager.PHONE_TYPE_GSM:
-			Config.tvPhoneType.setText("GSM");
-			break;
-		case TelephonyManager.PHONE_TYPE_CDMA:
-			Config.tvPhoneType.setText("CDMA");
-			break;
-		case TelephonyManager.PHONE_TYPE_SIP:
-			Config.tvPhoneType.setText("SIP");
-			break;
-		default:
-			Config.tvPhoneType.setText("");
-			break;
-		}
 				
 		return view;
 	}
@@ -83,7 +65,6 @@ public class PhoneFragment extends Fragment {
     	Config.tvPhoneModel = (TextView) view.findViewById(id.phoneModel);
     	Config.tvosVersion = (TextView) view.findViewById(id.osVersion);
     	Config.tvOperator = (TextView) view.findViewById(id.operator);
-    	Config.tvPhoneType = (TextView) view.findViewById(id.phoneType);
     	Config.tvDataConnection = (TextView) view.findViewById(id.networkState);
     	Config.tvNetworkType = (TextView) view.findViewById(id.networkType);
     	Config.tvSignalStrength = (TextView) view.findViewById(id.signalStrength);

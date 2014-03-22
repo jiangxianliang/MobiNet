@@ -137,6 +137,12 @@ public class NetworkFragment extends Fragment {
 				case 4:
 					Config.tvTestReport.setText("HTTP Test请关注后续版本");
 					break;
+				case 5:
+					Config.tvTestReport.setText("下行吞吐量 请关注后续版本");
+					break;
+				case 6:
+					Config.tvTestReport.setText("上行吞吐量 请关注后续版本");
+					break;
 				default:
 					Config.tvTestReport.setText("Test does not support");
 					break;

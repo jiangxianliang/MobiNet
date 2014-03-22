@@ -75,7 +75,6 @@ public class Config {
 	static TextView tvPhoneModel;
 	static TextView tvosVersion;
 	static TextView tvOperator;
-	static TextView tvPhoneType;
 	static TextView tvNetworkType;
 	static TextView tvDataConnection;
 	static TextView tvSignalStrength;
@@ -116,13 +115,15 @@ public class Config {
 	static TextView tvTestReport;	
 	
 	// network state
-	static String testServerip = "59.66.122.23";
+	static String testServerip = "115.28.12.102";
 	static String testMeasuretime = "50"; //1
 	static String testInterval = "5";
-	static String[] measurementNames = { "Downlink Throughput",
-			"Uplink Throughput", "Ping Test", "DNS Lookup Test", "HTTP Test" };
-	static String[] defaultTarget = { testServerip, testServerip,
-			"3g.sina.com.cn", "3g.sina.com.cn", "3g.sina.com.cn" };
+	static String[] measurementNames = { "Ping Test", "DNS Lookup Test",
+			"HTTP Test", "TCP Downlink Test", "TCP Uplink Test",
+			"UDP Downlink Test", "UDP Uplink Test" };
+	static String[] defaultTarget = { "3g.sina.com.cn", "3g.sina.com.cn",
+			"3g.sina.com.cn", testServerip, testServerip, testServerip,
+			testServerip };
 	static int measurementID = 0;
 	static String addressSina = "3g.sina.com.cn";
 	static String addressBaidu = "m.baidu.com";
