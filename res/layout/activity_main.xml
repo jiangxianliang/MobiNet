@@ -40,7 +40,7 @@
             android:paddingTop="10dip" >
 
             <TextView
-                android:id="@+id/tv_tab_activity"
+                android:id="@+id/tv_tab_phone"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1.0"
@@ -50,7 +50,7 @@
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/tv_tab_groups"
+                android:id="@+id/tv_tab_network"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1.0"
@@ -60,22 +60,12 @@
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/tv_tab_friends"
+                android:id="@+id/tv_tab_about"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1.0"
                 android:gravity="center"
                 android:text="@string/tab_3"
-                android:textColor="@color/lightwhite"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/tv_tab_chat"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1.0"
-                android:gravity="center"
-                android:text="@string/tab_4"
                 android:textColor="@color/lightwhite"
                 android:textSize="18sp" />
         </LinearLayout>
@@ -90,7 +80,7 @@
             <ImageView
                 android:id="@+id/iv_bottom_line"
                 android:layout_width="40dip"
-                android:layout_height="2dip"
+                android:layout_height="1dip"
                 android:scaleType="matrix"
                 android:src="#fff" />
         </LinearLayout>
@@ -99,11 +89,18 @@
     <android.support.v4.view.ViewPager
         android:id="@+id/vPager"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dip"
         android:layout_gravity="center"
         android:layout_weight="1.0"
         android:background="#000000"
         android:flipInterval="30"
         android:persistentDrawingCache="animation" />
+
+    <TextView
+        android:id="@+id/tv_upload"
+        android:layout_width="fill_parent"
+        android:layout_height="15dp"
+        android:layout_alignParentBottom="true"
+        android:text="日志文件不涉及您的隐私，请放心上传" />
 
 </LinearLayout>

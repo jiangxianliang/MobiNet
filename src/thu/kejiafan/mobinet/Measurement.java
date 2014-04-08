@@ -29,13 +29,20 @@ public class Measurement {
 				String cmd = "ping " + target;
 				
 				try {
+					String date = Config.contentDateFormat.format(new Date(System.currentTimeMillis()));
+					Config.fosPing.write(date.getBytes());
+					Config.fosPing.write(System.getProperty("line.separator").getBytes());
+					
 					int i = 0;
 					Process process = Runtime.getRuntime().exec(cmd);
 					BufferedReader bufferedReader = new BufferedReader(
 							new InputStreamReader(process.getInputStream()));
 					while (i < count+1 && (res[i] = bufferedReader.readLine()) != null) {
+						Config.fosPing.write(res[i].getBytes());
+						Config.fosPing.write(System.getProperty("line.separator").getBytes());
 						i++;
 					}
+					Config.fosPing.write(System.getProperty("line.separator").getBytes());
 					double avg = 0;
 					for (i = 0; i < count; i++) {
 						if (res[i+1].contains("time=")) {
@@ -59,44 +66,51 @@ public class Measurement {
 		}.start();
 	}
 	
-	public static void pingJavaTest(final String target, final int count) {
-		new Thread(){
+	public static void dnsLookupTest(final String target, final int count) {
+		new Thread() {
 
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
 				super.run();
-				long pingStartTime = 0;
-				long pingEndTime = 0;
-				ArrayList<Double> rrts = new ArrayList<Double>();
-
-				try {
-					int timeOut = 3000;
-					long totalPingDelay = 0;
-					String output = Config.contentDateFormat.format(new Date(System.currentTimeMillis())) 
-							+ " " + target + " " + count + "\n";
-					for (int i = 0; i < count; i++) {
-						pingStartTime = System.currentTimeMillis();
-						boolean status = InetAddress.getByName(target).isReachable(timeOut);
-						pingEndTime = System.currentTimeMillis();
-						long rrtVal = pingEndTime - pingStartTime;
-						if (status) {
-							totalPingDelay += rrtVal;
-							rrts.add((double) rrtVal);
-							output += i + ": " + rrtVal + "\n";
+				
+				long t1, t2;
+				long totalTime = 0;
+				int successCnt = 0;
+				String output = Config.contentDateFormat.format(new Date(System.currentTimeMillis())) 
+						+ " " + target + " " + count + "\n";
+				for (int i = 0; i < count; i++) {
+					try {
+						t1 = System.currentTimeMillis();
+						InetAddress inet = InetAddress.getByName(target);
+						t2 = System.currentTimeMillis();
+						if (inet != null) {
+							totalTime += (t2 - t1);
+							successCnt++;
+							output += i + ": " + (t2 - t1) + "\n";
 						}
+					} catch (UnknownHostException e) {
+						Config.dnsLookupInfo = "域名解析错误";
+						Config.testFlag = 22;
+						e.printStackTrace();
 					}
-					double packetLoss = 1 - ((double) rrts.size() / count);
-					Config.pingInfo = String.valueOf(totalPingDelay/count);
-					Config.testFlag = 11;
-				} catch (Exception e) {
-					Config.testFlag = 12;
+				}
+				Config.dnsLookupInfo = String.valueOf(totalTime / successCnt);
+				try {
+					Config.fosDNS.write(output.getBytes());
+					Config.fosDNS.write(Config.dnsLookupInfo.getBytes());
+					Config.fosDNS.write(System.getProperty("line.separator").getBytes());
+					Config.testFlag = 21;
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					Config.dnsLookupInfo = "您的机型暂不支持该测试";
+					Config.testFlag = 22;
 					e.printStackTrace();
 				}
-			}		
+			}
 		}.start();
 	}
-	
+		
 	public static void pingURLTest(final String target, final int count) {
 		new Thread(){
 
@@ -128,7 +142,7 @@ public class Measurement {
 						output += i + ": " + totalPingDelay + "\n";
 						rrts.add((double) pingEndTime - pingStartTime);
 					}
-					double packetLoss = 1 - ((double) rrts.size() / count);
+//					double packetLoss = 1 - ((double) rrts.size() / count);
 					Config.pingInfo = String.valueOf(totalPingDelay/count);
 					Config.testFlag = 11;
 				} catch (Exception e) {
@@ -137,41 +151,6 @@ public class Measurement {
 				}
 			}			
 		}.start();		
-	}
-	
-	public static void dnsLookupTest(final String target, final int count) {
-		new Thread() {
-
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				super.run();
-				// nslookup命令 tracert命令
-				long t1, t2;
-				long totalTime = 0;
-				int successCnt = 0;
-				String output = Config.contentDateFormat.format(new Date(System.currentTimeMillis())) 
-						+ " " + target + " " + count + "\n";
-				for (int i = 0; i < count; i++) {
-					try {
-						t1 = System.currentTimeMillis();
-						InetAddress inet = InetAddress.getByName(target);
-						t2 = System.currentTimeMillis();
-						if (inet != null) {
-							totalTime += (t2 - t1);
-							successCnt++;
-							output += i + ": " + (t2 - t1) + "\n";
-						}
-					} catch (UnknownHostException e) {
-						Config.dnsLookupInfo = "域名解析错误";
-						Config.testFlag = 22;
-						e.printStackTrace();
-					}
-				}
-				Config.dnsLookupInfo = String.valueOf(totalTime / successCnt);
-				Config.testFlag = 21;
-			}
-		}.start();
 	}
 	
 	public static void httpTest(final String target) {
@@ -183,19 +162,14 @@ public class Measurement {
 				super.run();
 
 				String urlString = "http://" + target;
-				try {
-					long t1=System.currentTimeMillis();
-//					URL url = new URL(urlString);
-//					HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-//					urlConnection.getConnectTimeout();
-					
+				try {					
 //					AndroidHttpClient androidHttpClient; //get post
+					long t1=System.currentTimeMillis();
 					HttpClient httpClient = new DefaultHttpClient();
 					HttpGet httpget = new HttpGet(urlString); 
-					HttpResponse response = httpClient.execute(httpget);
-					
-					long t2=System.currentTimeMillis();
-//					Config.httpInfo = String.valueOf(t2-t1);
+					HttpResponse response = httpClient.execute(httpget);					
+					long t2 = System.currentTimeMillis();
+					Config.httpInfo = String.valueOf(t2-t1);
 					Config.testFlag = 31;
 				} catch (MalformedURLException e) {
 					// TODO Auto-generated catch block

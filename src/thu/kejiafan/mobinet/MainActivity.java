@@ -1,12 +1,23 @@
 package thu.kejiafan.mobinet;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import com.baidu.frontia.Frontia;
+import com.baidu.frontia.FrontiaFile;
+import com.baidu.frontia.api.FrontiaStorage;
+import com.baidu.frontia.api.FrontiaStorageListener.FileProgressListener;
+import com.baidu.frontia.api.FrontiaStorageListener.FileTransferListener;
 import com.baidu.mobstat.SendStrategyEnum;
-import com.baidu.mobstat.StatService;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -22,6 +33,7 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity {	
 	
@@ -29,6 +41,7 @@ public class MainActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		Frontia.init(MainActivity.this, Config.APIKEY);
 		
 		initAll();
 		Config.startTime = System.currentTimeMillis();
@@ -39,7 +52,7 @@ public class MainActivity extends FragmentActivity {
 		// TODO Auto-generated method stub
 		super.onPause();
 		
-		StatService.onPause(this);
+		Config.statistics.pageviewEnd(this, "MainActivity");
 	}
 
 	@Override
@@ -47,7 +60,7 @@ public class MainActivity extends FragmentActivity {
 		// TODO Auto-generated method stub
 		super.onResume();
 		
-		StatService.onResume(this);
+		Config.statistics.pageviewStart(this, "MainActivity");
 	}
 
 	@Override
@@ -64,8 +77,10 @@ public class MainActivity extends FragmentActivity {
 		// TODO Auto-generated method stub
 		switch (item.getItemId()) {
 		case 1:
+			Toast.makeText(getApplicationContext(), "请关注我们的后续版本", Toast.LENGTH_SHORT).show();
 			break;
 		case 2:
+			Toast.makeText(getApplicationContext(), "请关注我们的主页:\nhttp://qyxiao.weebly.com/", Toast.LENGTH_SHORT).show();
 			break;
 		case 3:
 			android.os.Process.killProcess(android.os.Process.myPid());
@@ -75,7 +90,7 @@ public class MainActivity extends FragmentActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
+	
 	private void initAll() {
 		// 设置屏幕常亮
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -88,18 +103,18 @@ public class MainActivity extends FragmentActivity {
         initViewPager();
         
         // 调用百度统计
-     	StatService.setAppChannel(this, "Baidu Market", true);
-     	StatService.setAppChannel(this, "Wandoujia", true);
-     	StatService.setAppChannel(this, "Weebly", true);
-     	StatService.setAppChannel(this, "Baidu0220", true);		
-     	StatService.setSendLogStrategy(this, SendStrategyEnum.APP_START, 1, false);
+        Config.statistics = Frontia.getStatistics();
+        Config.statistics.setAppDistributionChannel("Weebly");
+        Config.statistics.start(SendStrategyEnum.APP_START, 10, 1, false);
+        Config.statistics.enableExceptionLog();//开启异常日志
+        Config.statistics.setReportId(Config.reportId);
 	}
 	
 	private void initTextView() {
-        Config.tvTabPhone = (TextView) findViewById(R.id.tv_tab_activity);
-        Config.tvTabNetwork = (TextView) findViewById(R.id.tv_tab_groups);
-        Config.tvTabGPS = (TextView) findViewById(R.id.tv_tab_friends);
-        Config.tvTabAbout = (TextView) findViewById(R.id.tv_tab_chat);
+		Config.tvUpload = (TextView) findViewById(R.id.tv_upload);
+        Config.tvTabPhone = (TextView) findViewById(R.id.tv_tab_phone);
+        Config.tvTabNetwork = (TextView) findViewById(R.id.tv_tab_network);
+        Config.tvTabAbout = (TextView) findViewById(R.id.tv_tab_about);
 
         Config.tvTabPhone.setOnClickListener(new OnClickListener() {
 			
@@ -117,20 +132,12 @@ public class MainActivity extends FragmentActivity {
 				Config.mPager.setCurrentItem(1);
 			}
 		});
-        Config.tvTabGPS.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				Config.mPager.setCurrentItem(2);
-			}
-		});
         Config.tvTabAbout.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Config.mPager.setCurrentItem(3);
+				Config.mPager.setCurrentItem(2);
 			}
 		});
     }
@@ -141,12 +148,10 @@ public class MainActivity extends FragmentActivity {
 
 		Fragment phoneFragment = new PhoneFragment();
 		Fragment networkFragment = new NetworkFragment();
-		Fragment gpsFragment = new GPSFragment();
 		Fragment aboutFragment = new AboutFragment();
 
         Config.fragmentsList.add(phoneFragment);
         Config.fragmentsList.add(networkFragment);
-        Config.fragmentsList.add(gpsFragment);
         Config.fragmentsList.add(aboutFragment);
         
         Config.mPager.setAdapter(new MyFragmentPagerAdapter(getSupportFragmentManager(), Config.fragmentsList));
@@ -161,18 +166,15 @@ public class MainActivity extends FragmentActivity {
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         int screenW = dm.widthPixels;
 
-        LayoutParams params = (LayoutParams) Config.ivBottomLine.getLayoutParams();  
-        params.height = 2;  
-		params.width = (int) (screenW/ 4.0);
+        LayoutParams params = (LayoutParams) Config.ivBottomLine.getLayoutParams();
+        params.height = 4;
+		params.width = (int) (screenW/ 3.0);
         Config.ivBottomLine.setLayoutParams(params);
         
-//        Config.offset = (int) ((screenW / 4.0 - Config.bottomLineWidth) / 2);
-        Config.position_one = (int) (screenW / 4.0);
+        Config.position_one = (int) (screenW / 3.0);
         Config.position_two = Config.position_one * 2;
         Config.position_three = Config.position_one * 3;
     }
-    
-    
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -184,19 +186,139 @@ public class MainActivity extends FragmentActivity {
 			builder.setMessage("退出MobiNet?");
 			builder.setPositiveButton("返回",
 					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int whichButton) {
+
+						@Override
+						public void onClick(DialogInterface dialog,
+								int whichButton) {
 							return;
 						}
 					});
-			builder.setNegativeButton("确定",
+//			builder.setNeutralButton("直接退出",
+//					new DialogInterface.OnClickListener() {
+//
+//						@Override
+//						public void onClick(DialogInterface dialog, int which) {
+//							// TODO Auto-generated method stub
+//							android.os.Process.killProcess(android.os.Process.myPid());
+//						}
+//					});
+			builder.setNegativeButton("上传并退出",
 					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int whichButton) {
-							android.os.Process.killProcess(android.os.Process.myPid());
+
+						@Override
+						public void onClick(DialogInterface dialog,
+								int whichButton) {
+							Toast.makeText(getApplicationContext(), "uploading...", Toast.LENGTH_LONG).show();
+							collectInfo();
 						}
 					});
 			builder.show();
 		}
 
 		return super.onKeyDown(keyCode, event);
+	}
+	
+	void uploadFile(FrontiaStorage mCloudStorage, final FrontiaFile mFile) {
+		final ProgressDialog pDialog = new ProgressDialog(MainActivity.this);
+    	pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+    	pDialog.setTitle("MobiNet");
+    	pDialog.setIcon(R.drawable.ic_launcher);
+    	pDialog.setMessage("log is uploading..."); 
+    	pDialog.setIndeterminate(false);
+    	pDialog.setCancelable(false);
+    	pDialog.show();
+    	
+    	mCloudStorage.uploadFile(mFile,
+                new FileProgressListener() {
+                    @Override
+                    public void onProgress(String source, long bytes, long total) {                		
+                    	pDialog.setMessage("log is uploading: " + bytes * 100 / total + "%");
+                    	Config.tvUpload.setText("log is uploading: " + bytes * 100 / total + "%");
+                    }
+                },
+                new FileTransferListener() {
+                    @Override
+                    public void onSuccess(String source, String newTargetName) {
+                    	mFile.setRemotePath(newTargetName);
+                    	deleteFile();
+                    	Config.tvUpload.setText("日志上传成功");
+                    	android.os.Process.killProcess(android.os.Process.myPid());
+                    }
+
+                    @Override
+                    public void onFailure(String source, int errCode, String errMsg) {
+                    	Config.tvUpload.setText("日志上传失败");
+                    }
+                }
+        );
+	}
+	
+	private String zipFile() {
+		try {			
+			String zipPath = android.os.Environment.getExternalStorageDirectory() + "/.MobiNet";
+	        File logFile = new File(zipPath);
+	        logFile.mkdir();
+			String dataPath = this.getFilesDir().getPath() + "/";
+			String path = android.os.Environment.getExternalStorageDirectory()
+					+ "/.MobiNet/" + Build.MODEL + ".zip";
+			path = path.replace(" ", "_");
+			FileOutputStream fos = new FileOutputStream(path);
+			ZipOutputStream zos = new ZipOutputStream(fos);
+			for (int i = 0; i < Config.filename.length; i++) {
+				ZipEntry zipEntry = new ZipEntry(Config.filename[i]);
+				zos.putNextEntry(zipEntry);
+				File file = new File(dataPath + Config.filename[i]);
+				FileInputStream is = new FileInputStream(file);
+				byte[] buffer = new byte[10240];
+				int byteCount = 0;
+				while ((byteCount = is.read(buffer)) >= 0) {
+					zos.write(buffer, 0, byteCount);
+				}
+				zos.flush();
+				zos.closeEntry();
+				is.close();
+			}
+			zos.finish();
+			zos.close();
+			return path;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+    private void collectInfo() {
+    	Config.tvUpload.setText("log is preparing...");
+    	String zipPath = zipFile();
+    	zipPath = zipPath.replace(" ", "_");
+    	Config.tvUpload.setText("log is uploading: " + "0 %");
+    	if (zipPath != null) {
+    		String remotePath = Build.MODEL + ".zip";
+    		remotePath = remotePath.replace(" ", "_");
+    		FrontiaFile mFile = new FrontiaFile();
+    		mFile.setNativePath(zipPath);
+    		mFile.setRemotePath(remotePath);
+    		FrontiaStorage mCloudStorage = Frontia.getStorage();
+        	
+    		uploadFile(mCloudStorage, mFile);
+		}
+    }
+    
+    private void deleteFile() {
+		String zipPath = android.os.Environment.getExternalStorageDirectory() + "/.MobiNet";
+		File file = new File(zipPath);
+		if (file.exists()) {
+			if (file.isFile()) {
+				file.delete();
+			} else if (file.isDirectory()) {
+				File files[] = file.listFiles();
+				if (files != null) {
+					for (int i = 0; i < files.length; i++) {
+						files[i].delete();
+					}
+				}
+			}
+		}
 	}
 }

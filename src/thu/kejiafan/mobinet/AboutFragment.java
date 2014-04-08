@@ -1,7 +1,5 @@
 package thu.kejiafan.mobinet;
 
-import com.baidu.mobstat.StatService;
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -23,7 +21,7 @@ public class AboutFragment extends Fragment {
 		// TODO Auto-generated method stub
 		super.onPause();
 		
-		StatService.onPause(this);
+		Config.statistics.pageviewEnd(this, "AboutFragment");
 	}
 
 	@Override
@@ -31,6 +29,6 @@ public class AboutFragment extends Fragment {
 		// TODO Auto-generated method stub
 		super.onResume();
 		
-		StatService.onResume(this);
+		Config.statistics.pageviewStart(this, "AboutFragment");
 	}
 }

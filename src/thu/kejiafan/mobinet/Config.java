@@ -4,6 +4,9 @@ import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
+import com.baidu.frontia.api.FrontiaStatistics;
+
+import android.app.ProgressDialog;
 import android.content.res.Resources;
 import android.location.Criteria;
 import android.location.Location;
@@ -13,18 +16,22 @@ import android.support.v4.view.ViewPager;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 public class Config {
+	// Baidu API
+	public static FrontiaStatistics statistics;
+	public static final String reportId = "3b70a11423";
+	public final static String APIKEY = "73kSsln0gDCir7PINzkzNtjy";
+	public static TextView tvUpload;
+	
 	// viewpager
 	public static ViewPager mPager;
     public static ArrayList<Fragment> fragmentsList;
     public static ImageView ivBottomLine;
     public static TextView tvTabPhone;
 	public static TextView tvTabNetwork;
-	public static TextView tvTabGPS;
 	public static TextView tvTabAbout;
 
     public static int currIndex = 0;
@@ -36,7 +43,10 @@ public class Config {
     public static Resources resources;
     
     // file for log
-    static SimpleDateFormat dirDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+//    static SimpleDateFormat dirDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+	static String[] filename = new String[] { "Mobile.txt", "Signal.txt",
+			"Speed.txt", "Cell.txt", "Uplink.txt", "Downlink.txt", "Ping.txt",
+			"DNS.txt" }; // "Addition.txt"
     static FileOutputStream fosMobile = null;
 	static FileOutputStream fosSignal = null;
 	static FileOutputStream fosSpeed = null;
@@ -44,7 +54,7 @@ public class Config {
 	static FileOutputStream fosUplink = null;
 	static FileOutputStream fosDownlink = null;
 	static FileOutputStream fosPing = null;
-	static FileOutputStream fosAddition = null;
+//	static FileOutputStream fosAddition = null;
 	static FileOutputStream fosDNS = null;
 	static FileOutputStream fosHTTP = null;
     
@@ -78,10 +88,12 @@ public class Config {
 	static TextView tvNetworkType;
 	static TextView tvDataConnection;
 	static TextView tvSignalStrength;
-	static TextView tvSignalParameter;
 	static TextView tvCurrentCell;
-	static TextView tvCellLocation;
+	static TextView tvCurrentLocation;
 	static TextView tvHandoffNumber;
+	static TextView tvGpsState; 
+	static TextView tvSatellite;
+	static TextView tvSystemTime;
 	
 	// phone state
 	static String networkTypeString = "";
@@ -101,7 +113,6 @@ public class Config {
 			| PhoneStateListener.LISTEN_DATA_CONNECTION_STATE;
 	
 	// network widget
-	static EditText edTargetAddress;
 	static Button btnRun;
 	static TextView tvDataConnectionState;
 	static TextView tvWiFiConnection;
@@ -111,19 +122,16 @@ public class Config {
 	static TextView tvThroughput;
 	static TextView tvDNSLatency;
 	static TextView tvPingLatency;
-	static TextView tvHTTPLatency;
-	static TextView tvTestReport;	
+	static TextView tvTestReport;
+	static ProgressDialog mDialog;
 	
 	// network state
-	static String testServerip = "115.28.12.102";
-	static String testMeasuretime = "50"; //1
+	static String testServerip = "202.112.3.74";
+	static String testMeasuretime = "2"; //1
 	static String testInterval = "5";
-	static String[] measurementNames = { "Ping Test", "DNS Lookup Test",
-			"HTTP Test", "TCP Downlink Test", "TCP Uplink Test",
-			"UDP Downlink Test", "UDP Uplink Test" };
-	static String[] defaultTarget = { "3g.sina.com.cn", "3g.sina.com.cn",
-			"3g.sina.com.cn", testServerip, testServerip, testServerip,
-			testServerip };
+	static TCPTest myTcpTest = null;
+	static int tcpUploadPort = 5001;
+	static int tcpDownloadPort = 5002;
 	static int measurementID = 0;
 	static String addressSina = "3g.sina.com.cn";
 	static String addressBaidu = "m.baidu.com";
@@ -137,19 +145,9 @@ public class Config {
 	static String dnsLookupInfo = "";
 	static String httpInfo = "";
 	
-	// gps widget
-	static TextView tvGpsState; 
-	static TextView tvSatelliteAvailable;
-	static TextView tvSatelliteFix;
-	static TextView tvCurrentLocation; 
-	static TextView tvCurrentSpeed;
-	static TextView tvAccuracy;
-	static TextView tvSystemTime;
-	static TextView tvGpsTime;
-	
 	// gps content
 	static SimpleDateFormat contentDateFormat = new SimpleDateFormat("yyyyMMdd HH:mm:ss.SSS");
-	static SimpleDateFormat sysDateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
+	static SimpleDateFormat sysDateFormat = new SimpleDateFormat("HH:mm:ss");
 	static long startTime = 0;
 	static String totalTime = "";
 	static String gpsStateString = "";

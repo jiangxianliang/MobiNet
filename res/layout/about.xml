@@ -15,14 +15,14 @@
         android:singleLine="false"
         android:text="@string/aboutTextCN"
         android:textColorLink="@color/cyan"
-        android:textSize="17sp" />
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/about_version"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/app_version"
-        android:textSize="17sp" />
+        android:textSize="15sp" />
 
     <TextView
         android:layout_width="fill_parent"
@@ -30,7 +30,7 @@
         android:autoLink="all"
         android:text="@string/noteTextCN"
         android:textColorLink="@color/cyan"
-        android:textSize="17sp" />
+        android:textSize="15sp" />
 
     <TextView
         android:layout_width="fill_parent"
@@ -38,7 +38,7 @@
         android:autoLink="all"
         android:text="@string/aboutContact"
         android:textColorLink="@color/cyan"
-        android:textSize="17sp" />
+        android:textSize="15sp" />
 
     <Button
         android:id="@+id/btnCheck"

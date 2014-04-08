@@ -33,9 +33,9 @@ public class MyPhoneStateListener extends PhoneStateListener {
 			psc = ((CdmaCellLocation) location).getSystemId();
 			cellLatitude = ((CdmaCellLocation) location).getBaseStationLatitude();
 			cellLongitude = ((CdmaCellLocation) location).getBaseStationLongitude();
-			Config.tvCellLocation.setText(cellLatitude + " " + cellLongitude);
+			Config.tvCurrentLocation.setText(cellLatitude + " " + cellLongitude);
 		}
-		Config.tvCurrentCell.setText("Cid:" +cid + " Lac:" + lac + " Psc:" + psc);
+		Config.tvCurrentCell.setText("Cid:" + cid + " Lac:" + lac);
 		if (cid == Config.lastcellid) {
 
 		} else {
@@ -189,10 +189,9 @@ public class MyPhoneStateListener extends PhoneStateListener {
 			break;
 		}
 		Config.tvSignalStrength.setText(Config.signalStrengthString);
-		Config.tvSignalParameter.setText(Config.SignalParameterString);
 
 		String signalContent = Config.networkTypeString + " "
-				+ Config.signalStrengthString + " "+ Config.SignalParameterString;
+				+ Config.signalStrengthString + " " + Config.SignalParameterString;
 		try {
 			if (signalContent.equals(Config.lastSignalContent)) {
 				

@@ -7,7 +7,7 @@ import android.view.animation.TranslateAnimation;
 /**
  * 
  * @author XQY 
- * 1. Phone 2. Network 3. GPS 4. About
+ * 1. Phone 2. Network 3. About
  */
 public class MyOnPageChangeListener implements OnPageChangeListener {
 
@@ -36,11 +36,10 @@ public class MyOnPageChangeListener implements OnPageChangeListener {
 				break;
 			case 2:
 				animation = new TranslateAnimation(Config.position_two, 0, 0, 0);
-				Config.tvTabGPS.setTextColor(Config.resources.getColor(R.color.lightwhite));
-				break;
-			case 3:
-				animation = new TranslateAnimation(Config.position_three, 0, 0,
-						0);
+//				Config.tvTabGPS.setTextColor(Config.resources.getColor(R.color.lightwhite));
+//				break;
+//			case 3:
+//				animation = new TranslateAnimation(Config.position_three, 0, 0, 0);
 				Config.tvTabAbout.setTextColor(Config.resources.getColor(R.color.lightwhite));
 				break;
 			default:
@@ -58,11 +57,11 @@ public class MyOnPageChangeListener implements OnPageChangeListener {
 			case 2:
 				animation = new TranslateAnimation(Config.position_two,
 						Config.position_one, 0, 0);
-				Config.tvTabGPS.setTextColor(Config.resources.getColor(R.color.lightwhite));
-				break;
-			case 3:
-				animation = new TranslateAnimation(Config.position_three,
-						Config.position_one, 0, 0);
+//				Config.tvTabGPS.setTextColor(Config.resources.getColor(R.color.lightwhite));
+//				break;
+//			case 3:
+//				animation = new TranslateAnimation(Config.position_three,
+//						Config.position_one, 0, 0);
 				Config.tvTabAbout.setTextColor(Config.resources.getColor(R.color.lightwhite));
 				break;
 			default:
@@ -81,33 +80,35 @@ public class MyOnPageChangeListener implements OnPageChangeListener {
 				animation = new TranslateAnimation(Config.position_one, Config.position_two, 0, 0);
 				Config.tvTabNetwork.setTextColor(Config.resources.getColor(R.color.lightwhite));
 				break;
-			case 3:
-				animation = new TranslateAnimation(Config.position_three, Config.position_two, 0, 0);
-				Config.tvTabAbout.setTextColor(Config.resources.getColor(R.color.lightwhite));
-				break;
+//			case 3:
+//				animation = new TranslateAnimation(Config.position_three, Config.position_two, 0, 0);
+//				Config.tvTabAbout.setTextColor(Config.resources.getColor(R.color.lightwhite));
+//				break;
 			default:
 				break;
 			}
-			Config.tvTabGPS.setTextColor(Config.resources.getColor(R.color.white));
-			break;
-		case 3:
-			switch (Config.currIndex) {
-			case 0:
-				animation = new TranslateAnimation(0, Config.position_three, 0,
-						0);
-				Config.tvTabPhone.setTextColor(Config.resources.getColor(R.color.lightwhite));
-				break;
-			case 1:
-				animation = new TranslateAnimation(Config.position_one, Config.position_three, 0, 0);
-				Config.tvTabNetwork.setTextColor(Config.resources.getColor(R.color.lightwhite));
-				break;
-			case 2:
-				animation = new TranslateAnimation(Config.position_two, Config.position_three, 0, 0);
-				Config.tvTabGPS.setTextColor(Config.resources.getColor(R.color.lightwhite));
-				break;
-			}
+			
+//			Config.tvTabGPS.setTextColor(Config.resources.getColor(R.color.white));			
 			Config.tvTabAbout.setTextColor(Config.resources.getColor(R.color.white));
 			break;
+//		case 3:
+//			switch (Config.currIndex) {
+//			case 0:
+//				animation = new TranslateAnimation(0, Config.position_three, 0,
+//						0);
+//				Config.tvTabPhone.setTextColor(Config.resources.getColor(R.color.lightwhite));
+//				break;
+//			case 1:
+//				animation = new TranslateAnimation(Config.position_one, Config.position_three, 0, 0);
+//				Config.tvTabNetwork.setTextColor(Config.resources.getColor(R.color.lightwhite));
+//				break;
+//			case 2:
+//				animation = new TranslateAnimation(Config.position_two, Config.position_three, 0, 0);
+//				Config.tvTabGPS.setTextColor(Config.resources.getColor(R.color.lightwhite));
+//				break;
+//			}
+//			Config.tvTabAbout.setTextColor(Config.resources.getColor(R.color.white));
+//			break;
 		}
 		Config.currIndex = arg0;
         animation.setFillAfter(true);

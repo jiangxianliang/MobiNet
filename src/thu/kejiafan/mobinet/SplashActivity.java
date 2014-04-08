@@ -1,13 +1,7 @@
 package thu.kejiafan.mobinet;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Date;
-
-import com.baidu.mobstat.StatService;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -32,36 +26,8 @@ public class SplashActivity extends Activity{
 	    this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 	    this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 	    
-	    // 创建日志路径	    
-		try {
-			if (android.os.Environment.getExternalStorageState().equals(
-					android.os.Environment.MEDIA_MOUNTED)) {
-
-			}
-			else {
-				return;
-			}
-			String mobilePath = android.os.Environment.getExternalStorageDirectory() + "/MobiNet";
-			String pathDate = Config.dirDateFormat.format(new Date(System.currentTimeMillis()));
-			File mobileFile = new File(mobilePath);
-			mobileFile.mkdirs();
-			mobilePath = mobilePath + "/" + pathDate;
-			mobileFile = new File(mobilePath);
-			mobileFile.mkdirs();
-			Config.fosMobile = new FileOutputStream(mobilePath + "/Mobile.txt", true);
-			Config.fosSignal = new FileOutputStream(mobilePath + "/Signal.txt", true);
-			Config.fosSpeed = new FileOutputStream(mobilePath + "/Speed.txt", true);
-			Config.fosCell = new FileOutputStream(mobilePath + "/Cell.txt", true);
-			Config.fosUplink = new FileOutputStream(mobilePath + "/Uplink.txt", true);
-			Config.fosDownlink = new FileOutputStream(mobilePath + "/Downlink.txt", true);
-			Config.fosPing = new FileOutputStream(mobilePath + "/Ping.txt", true);
-			Config.fosAddition = new FileOutputStream(mobilePath + "/Addition.txt", true);
-			Config.fosDNS = new FileOutputStream(mobilePath + "/DNS.txt", true);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}    
-		
+	    
+	    createFilePath();// 创建日志路径		
         getTelephoneInfo();
 		writeLog();
 		
@@ -74,20 +40,21 @@ public class SplashActivity extends Activity{
         }, 3000);
 	}
 	
-	@Override
-	public void onPause() {
-		// TODO Auto-generated method stub		
-		super.onPause();
-		
-		StatService.onPause(this);
-	}
-
-	@Override
-	public void onResume() {
-		// TODO Auto-generated method stub		
-		super.onResume();
-		
-		StatService.onResume(this);
+	private void createFilePath() {
+		try {
+			Config.fosMobile = this.openFileOutput("Mobile.txt", Context.MODE_PRIVATE);
+			Config.fosSignal = this.openFileOutput("Signal.txt", Context.MODE_PRIVATE);
+			Config.fosSpeed = this.openFileOutput("Speed.txt", Context.MODE_PRIVATE);
+			Config.fosCell = this.openFileOutput("Cell.txt", Context.MODE_PRIVATE);
+			Config.fosUplink = this.openFileOutput("Uplink.txt", Context.MODE_PRIVATE);
+			Config.fosDownlink = this.openFileOutput("Downlink.txt", Context.MODE_PRIVATE);
+			Config.fosPing = this.openFileOutput("Ping.txt", Context.MODE_PRIVATE);
+//			Config.fosAddition = this.openFileOutput("Addition.txt", Context.MODE_PRIVATE);
+			Config.fosDNS = this.openFileOutput("DNS.txt", Context.MODE_PRIVATE);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private void getTelephoneInfo() {
@@ -136,7 +103,9 @@ public class SplashActivity extends Activity{
 			if (Config.fosMobile != null) {
 				Config.fosMobile.write(infoString.getBytes());
 				Config.fosMobile.write(System.getProperty("line.separator").getBytes());
-			}			
+			}
+//			Config.summaryFileName = Config.phoneModel + Config.dirDateFormat.format(new Date(System.currentTimeMillis())) + ".txt";
+//			Config.fosSummary = this.openFileOutput(Config.summaryFileName, Context.MODE_APPEND);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
