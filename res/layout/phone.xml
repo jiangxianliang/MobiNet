@@ -218,7 +218,7 @@
             android:layout_below="@+id/gpsState"
             android:layout_marginTop="8dp"
             android:gravity="right"
-            android:text="" />
+            android:text="GPS开启后有效" />
 
         <TextView
             android:id="@+id/systemTime"

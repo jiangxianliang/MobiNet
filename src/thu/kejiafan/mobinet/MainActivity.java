@@ -111,7 +111,7 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	private void initTextView() {
-		Config.tvUpload = (TextView) findViewById(R.id.tv_upload);
+//		Config.tvUpload = (TextView) findViewById(R.id.tv_upload);
         Config.tvTabPhone = (TextView) findViewById(R.id.tv_tab_phone);
         Config.tvTabNetwork = (TextView) findViewById(R.id.tv_tab_network);
         Config.tvTabAbout = (TextView) findViewById(R.id.tv_tab_about);
@@ -209,7 +209,12 @@ public class MainActivity extends FragmentActivity {
 						public void onClick(DialogInterface dialog,
 								int whichButton) {
 							Toast.makeText(getApplicationContext(), "uploading...", Toast.LENGTH_LONG).show();
-							collectInfo();
+
+							if (Config.isBtnRun) {
+								collectInfo();
+							} else {
+								android.os.Process.killProcess(android.os.Process.myPid());
+							}
 						}
 					});
 			builder.show();
@@ -233,34 +238,37 @@ public class MainActivity extends FragmentActivity {
                     @Override
                     public void onProgress(String source, long bytes, long total) {                		
                     	pDialog.setMessage("log is uploading: " + bytes * 100 / total + "%");
-                    	Config.tvUpload.setText("log is uploading: " + bytes * 100 / total + "%");
+                    	Config.tvTestReport.setText("log is uploading: " + bytes * 100 / total + "%");
                     }
                 },
                 new FileTransferListener() {
                     @Override
                     public void onSuccess(String source, String newTargetName) {
                     	mFile.setRemotePath(newTargetName);
-                    	deleteFile();
-                    	Config.tvUpload.setText("日志上传成功");
+//                    	deleteFile();
+                    	Config.tvTestReport.setText("日志上传成功");
                     	android.os.Process.killProcess(android.os.Process.myPid());
                     }
 
                     @Override
                     public void onFailure(String source, int errCode, String errMsg) {
-                    	Config.tvUpload.setText("日志上传失败");
+                    	Config.tvTestReport.setText("日志上传失败");
+                    	android.os.Process.killProcess(android.os.Process.myPid());
                     }
                 }
         );
 	}
 	
 	private String zipFile() {
-		try {			
-			String zipPath = android.os.Environment.getExternalStorageDirectory() + "/.MobiNet";
-	        File logFile = new File(zipPath);
-	        logFile.mkdir();
-			String dataPath = this.getFilesDir().getPath() + "/";
-			String path = android.os.Environment.getExternalStorageDirectory()
-					+ "/.MobiNet/" + Build.MODEL + ".zip";
+		try {
+			String dataPath = this.getFilesDir().getPath() + "/";			
+			String path = dataPath;
+			if (Config.wifiState.equals("Disconnected")) {
+				path = path + Config.networkTypeString + "_" + Build.MODEL + ".zip";
+			} else {
+				path = path + "WiFi_" + Config.networkTypeString + "_"
+						+ Build.MODEL + ".zip";
+			}
 			path = path.replace(" ", "_");
 			FileOutputStream fos = new FileOutputStream(path);
 			ZipOutputStream zos = new ZipOutputStream(fos);
@@ -289,12 +297,18 @@ public class MainActivity extends FragmentActivity {
 	}
 	
     private void collectInfo() {
-    	Config.tvUpload.setText("log is preparing...");
+    	Config.tvTestReport.setText("log is preparing...");
     	String zipPath = zipFile();
-    	zipPath = zipPath.replace(" ", "_");
-    	Config.tvUpload.setText("log is uploading: " + "0 %");
+    	Config.tvTestReport.setText("log is uploading: " + "0 %");
     	if (zipPath != null) {
-    		String remotePath = Build.MODEL + ".zip";
+    		String remotePath = "";
+			if (Config.wifiState.equals("Disconnected")) {
+				remotePath = Config.networkTypeString + "_" + Build.MODEL
+						+ ".zip";
+			} else {
+				remotePath = "WiFi_" + Config.networkTypeString + "_"
+						+ Build.MODEL + ".zip";
+			}
     		remotePath = remotePath.replace(" ", "_");
     		FrontiaFile mFile = new FrontiaFile();
     		mFile.setNativePath(zipPath);

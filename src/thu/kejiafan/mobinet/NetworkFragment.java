@@ -64,21 +64,23 @@ public class NetworkFragment extends Fragment {
 			public void onClick(View view) {
 				// TODO Auto-generated method stub
 
-				if (Config.wifiState.equals("Disconnected")
-						&& Config.dataConnectionState.equals("Disconnected")) {
-					Config.tvTestReport.setText("网络已断开，请检查网络连接");
-					return;
+				if (Config.wifiState.equals("Disconnected")) {
+					if (Config.dataConnectionState.equals("Disconnected")
+							|| Config.dataConnectionState.equals("Unknown")) {
+						Config.tvTestReport.setText("网络已断开，请检查网络连接");
+						return;
+					}
 				}
-
+				
 				Config.testFlag = 0;
-
+				Config.isBtnRun = true;
 				Config.mDialog = new ProgressDialog(getActivity());
 				Config.mDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 				Config.mDialog.setTitle("MobiNet");
 				Config.mDialog.setIcon(R.drawable.ic_launcher);
 				Config.mDialog.setMessage("testing...");
 				Config.mDialog.setIndeterminate(false);
-				Config.mDialog.setCancelable(false);
+				Config.mDialog.setCancelable(true);
 				Config.mDialog.show();
 				
 				Config.tvTestReport.setText("DNS lookup testing...");
@@ -103,15 +105,7 @@ public class NetworkFragment extends Fragment {
 				}
 				handler4Test.removeCallbacks(runnable4Test);
 				handler4Test.post(runnable4Test);
-				Measurement.pingCmdTest(Config.testServerip, 10);							
-				
-//				handler4Show.post(runnable4Show);
-
-//				Config.tvTestReport.setText("TCP uplink testing...");
-//				pDialog.setMessage("TCP uplink testing...");
-//				Config.myTcpTest = new TCPTest(mHandler, serverIPString, "2",
-//						"5", Config.fosUplink, 2);
-//				handler4Show.post(runnable4Show);
+				Measurement.pingCmdTest(Config.testServerip, 10);
 			}
 
 		});
@@ -125,20 +119,37 @@ public class NetworkFragment extends Fragment {
 			} else if (msg.what == 1) {
 				Config.tvTestReport.setText("Client has connected to server");
 			} else if (msg.what == 2) {
-				Config.tvUpload.setText("Reconnecting...");
+				Config.tvTestReport.setText("Reconnecting...");
 			} else if (msg.what == 3) {
 				Config.tvTestReport.setText("TCP downlink test finished");
+				if (Config.mDialog.isShowing()) {
+					Config.mDialog.setMessage("TCP downlink test finished");
+				}				
+				handler4Show.removeCallbacks(runnable4Show);
+				Config.tvTestReport.setText("TCP uplink testing...");
+				if (Config.mDialog.isShowing()) {
+					Config.mDialog.setMessage("TCP uplink testing...");
+				}				
+				Config.myTcpTest = new TCPTest(mHandler, Config.testServerip, "60",
+						"5", Config.fosUplink, 2);
+				handler4Show2.post(runnable4Show2);
+			} else if (msg.what == 4) {
 				Config.mDialog.dismiss();
 				Config.mDialog.cancel();
-				handler4Show.removeCallbacks(runnable4Show);
-				Config.tvThroughput.setText("平均下行:"
-						+ Config.myTcpTest.mAvgDownlinkThroughput + " kbps");
-//				Config.tvThroughput.setText("平均上行:"
-//						+ Config.myTcpTest.mAvgUplinkThroughput + " 平均下行:"
-//						+ Config.myTcpTest.mAvgDownlinkThroughput + " kbps");
-				Config.btnRun.setEnabled(true);
-			} else if (msg.what == 4) {
-				Config.tvUpload.setText("Server maybe have some error");
+				handler4Show2.removeCallbacks(runnable4Show2);
+				Config.tvThroughput.setText("平均上行:"
+						+ Config.mAvgUplinkThroughput + " 平均下行:"
+						+ Config.mAvgDownlinkThroughput + " kbps");
+				int tp = Integer.valueOf(Config.mAvgDownlinkThroughput) + Integer.valueOf(Config.mAvgUplinkThroughput);
+				if (tp > 600) {
+					Config.tvTestReport.setText("您的网速太快了...不敢相信");
+				} else if (tp > 400) {
+					Config.tvTestReport.setText("您的网速不错了...要知足啦");
+				} else if (tp > 200) {
+					Config.tvTestReport.setText("您的网速还能用...继续加油");
+				} else if (tp <= 200) {
+					Config.tvTestReport.setText("您的网速有点惨...不要伤心");
+				}
 				Config.btnRun.setEnabled(true);
 			}
 		};
@@ -152,11 +163,25 @@ public class NetworkFragment extends Fragment {
 		public void run() {
 			// TODO Auto-generated method stub
 			handler4Show.postDelayed(runnable4Show, 1000);
-			Config.mDialog.setMessage("Downlink throughput: " + Config.myTcpTest.mDownlinkThroughput + " kbps");
-			Config.tvThroughput.setText("下行:"
-					+ Config.myTcpTest.mDownlinkThroughput + " kbps");
-//			Config.tvThroughput.setText("上行:" + Config.myTcpTest.mUplinkThroughput + " 下行:"
-//					+ Config.myTcpTest.mDownlinkThroughput + " kbps");
+			if (Config.mDialog.isShowing()) {
+				Config.mDialog.setMessage("下行速率: " + Config.myTcpTest.mDownlinkThroughput + " kbps");
+			}			
+			Config.tvThroughput.setText("下行:" + Config.myTcpTest.mDownlinkThroughput + " kbps");
+		}
+	};
+	
+	private Handler handler4Show2 = new Handler();
+
+	private Runnable runnable4Show2 = new Runnable() {
+
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			handler4Show2.postDelayed(runnable4Show2, 1000);
+			if (Config.mDialog.isShowing()) {
+				Config.mDialog.setMessage("上行速率: " + Config.myTcpTest.mUplinkThroughput + " kbps");
+			}			
+			Config.tvThroughput.setText("上行:" + Config.myTcpTest.mUplinkThroughput + " 下行:" 	+ Config.mAvgDownlinkThroughput + " kbps");
 		}
 	};
 	
@@ -212,23 +237,31 @@ public class NetworkFragment extends Fragment {
 			handler4Test.postDelayed(runnable4Test, 1000);
 			if (Config.testFlag == 11) {
 				Config.tvPingLatency.setText(Config.pingInfo + " ms");
-				Config.mDialog.setMessage("Ping latency: " + Config.pingInfo + " ms");
+				if (Config.mDialog.isShowing()) {
+					Config.mDialog.setMessage("Ping时延: " + Config.pingInfo + " ms");
+				}
 				Config.tvTestReport.setText("Ping test finished");
 				Config.testFlag = 10;
 				
 				Config.tvTestReport.setText("TCP downlink testing...");
-				Config.mDialog.setMessage("TCP downlink testing...");
-				Config.myTcpTest = new TCPTest(mHandler, Config.testServerip, "1",
+				if (Config.mDialog.isShowing()) {
+					Config.mDialog.setMessage("TCP downlink testing...");
+				}				
+				Config.myTcpTest = new TCPTest(mHandler, Config.testServerip, "60",
 						"5", Config.fosDownlink, 1);
 				handler4Show.post(runnable4Show);
 			} else if (Config.testFlag == 12) {
-				Config.mDialog.setMessage("Ping test failed");
+				if (Config.mDialog.isShowing()) {
+					Config.mDialog.setMessage("Ping test failed");
+				}
 				Config.tvTestReport.setText("Ping test failed");
 				Config.testFlag = 10;
 				
 				Config.tvTestReport.setText("TCP downlink testing...");
-				Config.mDialog.setMessage("TCP downlink testing...");
-				Config.myTcpTest = new TCPTest(mHandler, Config.testServerip, "2",
+				if (Config.mDialog.isShowing()) {
+					Config.mDialog.setMessage("TCP downlink testing...");
+				}				
+				Config.myTcpTest = new TCPTest(mHandler, Config.testServerip, "60",
 						"5", Config.fosDownlink, 1);
 				handler4Show.post(runnable4Show);
 			} else if (Config.testFlag == 13) {
@@ -236,11 +269,15 @@ public class NetworkFragment extends Fragment {
 				Config.testFlag = 10;
 			} else if (Config.testFlag == 21) {
 				Config.tvDNSLatency.setText(Config.dnsLookupInfo + " ms");
-				Config.mDialog.setMessage("DNS lookup latency: " + Config.dnsLookupInfo + " ms");
+				if (Config.mDialog.isShowing()) {
+					Config.mDialog.setMessage("DNS lookup时延: " + Config.dnsLookupInfo + " ms");
+				}
 				Config.tvTestReport.setText("DNS lookup test finished");
 				Config.testFlag = 20;
 			} else if (Config.testFlag == 22) {
-				Config.mDialog.setMessage("DNS lookup test failed");
+				if (Config.mDialog.isShowing()) {
+					Config.mDialog.setMessage("DNS lookup test failed");
+				}
 				Config.tvTestReport.setText("DNS lookup test failed");
 				Config.testFlag = 20;
 			}

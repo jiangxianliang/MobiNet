@@ -170,7 +170,7 @@
             android:layout_below="@+id/pingLatency"
             android:layout_marginTop="8dp"
             android:gravity="right"
-            android:text="" />
+            android:text="请点击开始测试" />
 
         <Button
             android:id="@+id/btnRun"

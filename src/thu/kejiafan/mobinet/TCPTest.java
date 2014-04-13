@@ -13,8 +13,8 @@ public class TCPTest {
 	private Handler mHandler;
 	public String mUplinkThroughput = "0";
 	public String mDownlinkThroughput = "0";
-	public String mAvgUplinkThroughput = "0";
-	public String mAvgDownlinkThroughput = "0";
+//	public String mAvgUplinkThroughput = "0";
+//	public String mAvgDownlinkThroughput = "0";
 
 	public TCPTest(Handler _mHandler, String serverIP, String measuretime,
 			String interval, FileOutputStream fos, int mode) {
@@ -93,7 +93,6 @@ public class TCPTest {
 	static boolean boolthd = false;
 
 	private void connect2server() {
-
 		// send 0
 		mHandler.sendEmptyMessage(0);
 		// btnSend.setEnabled(false);
@@ -104,166 +103,171 @@ public class TCPTest {
 		numF.setMaximumFractionDigits(0);
 
 		// 测量时间由参数argv[2]指定，单位为min
-		mTime = Integer.parseInt(measureTime) * 60 * 1000;
+		// mTime = Integer.parseInt(measureTime) * 60 * 1000;
+		mTime = Integer.parseInt(measureTime) * 1000;
 		// 参数argv[3]指定带宽报告周期，单位为s
 		mInterval = Integer.parseInt(measureInterval) * 1000;
 
-		while (true) {
-			try {
-				// 建立连接，命令行参数argv[0]指示服务器的IP地址，服务器使用5001号端口监听
-				if (clientSocketUp == null) {
-					while (true) {
-						try {
-							clientSocketUp = new Socket(measureIP, Config.tcpUploadPort);							
-							if (clientSocketUp != null)
-								break;
-						} catch (Exception ce) {
-							continue;
-						}
+// 		while (true) {
+		try {
+			// 建立连接，命令行参数argv[0]指示服务器的IP地址，服务器使用5001号端口监听
+			if (clientSocketUp == null) {
+				while (true) {
+					try {
+						clientSocketUp = new Socket(measureIP,
+								Config.tcpUploadPort);
+						if (clientSocketUp != null)
+							break;
+					} catch (Exception ce) {
+						continue;
 					}
 				}
+			}
 
-				// send 1
-				mHandler.sendEmptyMessage(1);
-				
-				mTotalLen = 0;
-				mLastTotalLen = 0;
-				
-				String connectTimeString = Config.contentDateFormat.format(new Date());
-				String local = " Local "
-						+ clientSocketUp.getLocalAddress().getHostAddress()
-						+ " port " + clientSocketUp.getLocalPort();
-				String peer = clientSocketUp.getRemoteSocketAddress().toString();
-				fosUplink.write((" ConnectTime: " + connectTimeString + local
-						+ " connected to " + peer + "\n").getBytes());
+			// send 1
+			mHandler.sendEmptyMessage(1);
 
-				// 每次向套接字中写入buf的数据，长度为4K,大小为8KB，内容为全'1'
-				int bufLen = 1 * 1024;
-				// 每次写入的字节数
-				int currLen = bufLen * 2;
-				String buf = "";
-				for (int i = 0; i < bufLen; i++)
-					buf += '1';
+			mTotalLen = 0;
+			mLastTotalLen = 0;
 
-				DataOutputStream outToServer = new DataOutputStream(clientSocketUp.getOutputStream());
+			String connectTimeString = Config.contentDateFormat
+					.format(new Date());
+			String local = " Local "
+					+ clientSocketUp.getLocalAddress().getHostAddress()
+					+ " port " + clientSocketUp.getLocalPort();
+			String peer = clientSocketUp.getRemoteSocketAddress().toString();
+			fosUplink.write((" ConnectTime: " + connectTimeString + local
+					+ " connected to " + peer + "\n").getBytes());
 
-				mStartTime = System.currentTimeMillis();
-				mEndTime = mStartTime + mTime;
-				mLastTime = mStartTime;
-				mNextTime = mStartTime + mInterval;
+			// 每次向套接字中写入buf的数据，长度为4K,大小为8KB，内容为全'1'
+			int bufLen = 1 * 1024;
+			// 每次写入的字节数
+			int currLen = bufLen * 2;
+			String buf = "";
+			for (int i = 0; i < bufLen; i++)
+				buf += '1';
 
-				do {
-					outToServer.writeChars(buf);
-					packetTime = System.currentTimeMillis();
-					disconnectTime = Config.contentDateFormat.format(new Date());
+			DataOutputStream outToServer = new DataOutputStream(
+					clientSocketUp.getOutputStream());
 
-					if (packetTime >= mNextTime) {
-						long inBytes = mTotalLen - mLastTotalLen;
-						long inStart = mLastTime - mStartTime;
-						long inStop = mNextTime - mStartTime;
+			mStartTime = System.currentTimeMillis();
+			mEndTime = mStartTime + mTime;
+			mLastTime = mStartTime;
+			mNextTime = mStartTime + mInterval;
 
+			do {
+				outToServer.writeChars(buf);
+				packetTime = System.currentTimeMillis();
+				disconnectTime = Config.contentDateFormat.format(new Date());
+
+				if (packetTime >= mNextTime) {
+					long inBytes = mTotalLen - mLastTotalLen;
+					long inStart = mLastTime - mStartTime;
+					long inStop = mNextTime - mStartTime;
+
+					// 1KB = 1024B; 1kbps = 1000bps
+					double throughput = (double) inBytes * 8
+							/ (mInterval / 1000) / 1000;
+					String rate = numF.format(throughput);
+					fosUplink.write((inStart / 1000 + "-" + inStop / 1000
+							+ " sec " + inBytes / 1024 + " KB " + rate
+							+ " kbps" + "\n").getBytes());
+
+					mUplinkThroughput = String.valueOf((int) throughput);// 回传
+
+					mLastTime = mNextTime;
+					mNextTime += mInterval;
+					mLastTotalLen = mTotalLen;
+
+					while (packetTime > mNextTime) {
+						// ReportPeriodicBW();
+						inBytes = mTotalLen - mLastTotalLen;
+						inStart = mLastTime - mStartTime;
+						inStop = mNextTime - mStartTime;
 						// 1KB = 1024B; 1kbps = 1000bps
-						double throughput = (double) inBytes * 8
-								/ (mInterval / 1000) / 1000;
-						String rate = numF.format(throughput);
+						throughput = (double) inBytes * 8 / (mInterval / 1000)
+								/ 1000;
+						rate = numF.format(throughput);
 						fosUplink.write((inStart / 1000 + "-" + inStop / 1000
 								+ " sec " + inBytes / 1024 + " KB " + rate
 								+ " kbps" + "\n").getBytes());
-						 
-						mUplinkThroughput = String.valueOf((int)throughput);//回传
+
+						mUplinkThroughput = String.valueOf((int) throughput);// 回传
 
 						mLastTime = mNextTime;
 						mNextTime += mInterval;
 						mLastTotalLen = mTotalLen;
-
-						while (packetTime > mNextTime) {
-							// ReportPeriodicBW();
-							inBytes = mTotalLen - mLastTotalLen;
-							inStart = mLastTime - mStartTime;
-							inStop = mNextTime - mStartTime;
-							// 1KB = 1024B; 1kbps = 1000bps
-							throughput = (double) inBytes * 8 / (mInterval / 1000) / 1000;
-							rate = numF.format(throughput);
-							fosUplink.write((inStart / 1000 + "-" + inStop
-									/ 1000 + " sec " + inBytes / 1024 + " KB "
-									+ rate + " kbps" + "\n").getBytes());
-							
-							mUplinkThroughput = String.valueOf((int)throughput);//回传
-							
-							mLastTime = mNextTime;
-							mNextTime += mInterval;
-							mLastTotalLen = mTotalLen;
-						}
-					}
-
-					// 没有抛出IOException的话，说明写入成功
-					mTotalLen += currLen;
-				} while (packetTime <= mEndTime);//add by XQy
-
-				// 报告整个测量期间的数据传输量和吞吐量
-				mTotalTime = packetTime - mStartTime;
-				double throughput = (double) mTotalLen * 8
-						/ (mTotalTime / 1000) / 1000;
-				String rate = numF.format(throughput);
-				String content = "TotalTime	Transfer Throughput uplink:" + "0-"
-						+ mTotalTime / 1000 + " sec " + mTotalLen / 1024
-						+ " KB " + rate + " kbps" + "\n";
-
-				mAvgUplinkThroughput = String.valueOf((int)throughput);//回传
-				
-				try {
-					fosUplink.write(content.getBytes());
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				// 关闭套接字和连接
-				clientSocketUp.close();
-
-				while (true) {
-					if (boolthd) {
-						break;
-					}
-					else {
-						Thread.sleep(1000);//add by XQY
-						continue;
 					}
 				}
 
-				break;
+				// 没有抛出IOException的话，说明写入成功
+				mTotalLen += currLen;
+			} while (packetTime <= mEndTime);// add by XQy
+
+			// 报告整个测量期间的数据传输量和吞吐量
+			mTotalTime = packetTime - mStartTime;
+			double throughput = (double) mTotalLen * 8 / (mTotalTime / 1000)
+					/ 1000;
+			String rate = numF.format(throughput);
+			String content = "TotalTime	Transfer Throughput uplink:" + "0-"
+					+ mTotalTime / 1000 + " sec " + mTotalLen / 1024 + " KB "
+					+ rate + " kbps" + "\n";
+
+			Config.mAvgUplinkThroughput = String.valueOf((int) throughput);// 回传
+
+			try {
+				fosUplink.write(content.getBytes());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}
 
+			// 关闭套接字和连接
+			clientSocketUp.close();
+
+			// while (true) {
+			// if (boolthd) {
+			// break;
+			// }
+			// else {
+			// Thread.sleep(1000);//add by XQY
+			// continue;
+			// }
+			// }
+			//
+			// break;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+
+			try {
+				fosUplink.write((disconnectTime + " disconnected " + "\n").getBytes());
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+			// send 2
+			mHandler.sendEmptyMessage(2);
+
+			// 建立连接，命令行参数argv[0]指示服务器的IP地址，服务器使用5001号端口监听
+			while (true) {
 				try {
-					fosUplink.write((disconnectTime + " disconnected " + "\n").getBytes());
+					clientSocketUp = new Socket(measureIP, Config.tcpUploadPort);
+					if (clientSocketUp != null) {
+						break;
+					}
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
+					continue;
 				}
-				
-				// send 2
-				mHandler.sendEmptyMessage(2);
-
-				// 建立连接，命令行参数argv[0]指示服务器的IP地址，服务器使用5001号端口监听
-				while (true) {
-					try {
-						clientSocketUp = new Socket(measureIP, Config.tcpUploadPort);
-						if (clientSocketUp != null) {
-							break;
-						}
-					} catch (Exception e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-						continue;
-					}
-				}
-				continue;
 			}
+// 			continue;
 		}
-		// send 3
-		mHandler.sendEmptyMessage(3);
+// }
+		// send 4
+		mHandler.sendEmptyMessage(4);
 	}
 	
 	private void server2client() {
@@ -275,7 +279,8 @@ public class TCPTest {
 		numF.setMaximumFractionDigits(0);
 
 		// 测量时间由参数argv[2]指定，单位为min
-		mTime = Integer.parseInt(measureTime) * 60 * 1000;
+//		mTime = Integer.parseInt(measureTime) * 60 * 1000;
+		mTime = Integer.parseInt(measureTime)  * 1000;
 		// 参数argv[3]指定带宽报告周期，单位为s
 		mInterval = Integer.parseInt(measureInterval) * 1000;
 		
@@ -398,7 +403,7 @@ public class TCPTest {
 					+ mTotalTimed / 1000 + " sec " + mTotalLend / 1024 + " KB "
 					+ rate + " kbps" + "\n";
 
-			mAvgDownlinkThroughput = String.valueOf((int) throughput);// 回传
+			Config.mAvgDownlinkThroughput = String.valueOf((int) throughput);// 回传
 
 			try {
 				fosDownlink.write(content.getBytes());

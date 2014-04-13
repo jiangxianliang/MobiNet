@@ -37,7 +37,7 @@ public class SplashActivity extends Activity{
                 SplashActivity.this.startActivity(mainIntent);  
                 SplashActivity.this.finish();  
             }
-        }, 3000);
+        }, 2000);
 	}
 	
 	private void createFilePath() {
@@ -49,7 +49,6 @@ public class SplashActivity extends Activity{
 			Config.fosUplink = this.openFileOutput("Uplink.txt", Context.MODE_PRIVATE);
 			Config.fosDownlink = this.openFileOutput("Downlink.txt", Context.MODE_PRIVATE);
 			Config.fosPing = this.openFileOutput("Ping.txt", Context.MODE_PRIVATE);
-//			Config.fosAddition = this.openFileOutput("Addition.txt", Context.MODE_PRIVATE);
 			Config.fosDNS = this.openFileOutput("DNS.txt", Context.MODE_PRIVATE);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block

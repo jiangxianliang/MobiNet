@@ -24,7 +24,7 @@ public class Config {
 	public static FrontiaStatistics statistics;
 	public static final String reportId = "3b70a11423";
 	public final static String APIKEY = "73kSsln0gDCir7PINzkzNtjy";
-	public static TextView tvUpload;
+	public static boolean isBtnRun = false;
 	
 	// viewpager
 	public static ViewPager mPager;
@@ -54,9 +54,7 @@ public class Config {
 	static FileOutputStream fosUplink = null;
 	static FileOutputStream fosDownlink = null;
 	static FileOutputStream fosPing = null;
-//	static FileOutputStream fosAddition = null;
 	static FileOutputStream fosDNS = null;
-	static FileOutputStream fosHTTP = null;
     
 	// variable for signalStrength
  	static int gsmSignalStrength = 99; // Valid values are (0-31, 99) as defined in TS 27.007 8.5
@@ -144,6 +142,8 @@ public class Config {
 	static String pingInfo = "";
 	static String dnsLookupInfo = "";
 	static String httpInfo = "";
+	static String mAvgUplinkThroughput = "0";
+	static String mAvgDownlinkThroughput = "0";
 	
 	// gps content
 	static SimpleDateFormat contentDateFormat = new SimpleDateFormat("yyyyMMdd HH:mm:ss.SSS");

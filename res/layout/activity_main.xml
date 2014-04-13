@@ -95,12 +95,12 @@
         android:background="#000000"
         android:flipInterval="30"
         android:persistentDrawingCache="animation" />
-
+<!-- 
     <TextView
         android:id="@+id/tv_upload"
         android:layout_width="fill_parent"
         android:layout_height="15dp"
         android:layout_alignParentBottom="true"
         android:text="日志文件不涉及您的隐私，请放心上传" />
-
+ -->
 </LinearLayout>
