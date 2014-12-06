@@ -10,6 +10,7 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -81,6 +82,7 @@ public class NetworkFragment extends Fragment {
 				Config.mDialog.setMessage("testing...");
 				Config.mDialog.setIndeterminate(false);
 				Config.mDialog.setCancelable(true);
+				Config.mDialog.getWindow().setGravity(Gravity.BOTTOM);
 				Config.mDialog.show();
 				
 				Config.tvTestReport.setText("DNS lookup testing...");
@@ -269,9 +271,9 @@ public class NetworkFragment extends Fragment {
 				Config.testFlag = 10;
 			} else if (Config.testFlag == 21) {
 				Config.tvDNSLatency.setText(Config.dnsLookupInfo + " ms");
-				if (Config.mDialog.isShowing()) {
-					Config.mDialog.setMessage("DNS lookup ±—”: " + Config.dnsLookupInfo + " ms");
-				}
+//				if (Config.mDialog.isShowing()) {
+//					Config.mDialog.setMessage("DNS lookup ±—”: " + Config.dnsLookupInfo + " ms");
+//				}
 				Config.tvTestReport.setText("DNS lookup test finished");
 				Config.testFlag = 20;
 			} else if (Config.testFlag == 22) {
